@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(unitserverFrameworkTest)
 
-list(APPEND CMAKE_PREFIX_PATH "/Users/kirillzhukov/Documents/TS/webserver/build/UnitLib")
+list(APPEND CMAKE_PREFIX_PATH "<path_to_build>")
 
 set(CMAKE_CXX_STANDARD 20)
 
