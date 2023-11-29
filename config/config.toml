@@ -1,6 +1,6 @@
 [certs]
-key_file = "/Users/kirillzhukov/Downloads/server.key"
-cert_file = "/Users/kirillzhukov/Downloads/server.pem"
+key_file = "<path_to_key>/server.key"
+cert_file = "<path_to_pem>/server.pem"
 
 [net]
 port = 8080
