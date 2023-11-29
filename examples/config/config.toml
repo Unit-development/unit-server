@@ -1,8 +1,7 @@
-doc_root = "/Users/kirillzhukov/CLionProjects/moexServer/websiteTest"
-# doc_root = "/Users/kirillzhukov/Desktop/webtest"
+doc_root = "<path_to_static_files_dir>"
 [certs]
-key_file = "/Users/kirillzhukov/Downloads/server.key"
-cert_file = "/Users/kirillzhukov/Downloads/server.pem"
+key_file = "<path_to_key>/server.key"
+cert_file = "<path_to_pem>/server.pem"
 
 [net]
 port = 8080
