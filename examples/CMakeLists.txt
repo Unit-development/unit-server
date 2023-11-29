@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(unitserverFrameworkTest)
 
-list(APPEND CMAKE_PREFIX_PATH "<path_to_build>")
+list(APPEND CMAKE_PREFIX_PATH "<build_path_for_unit_server>")
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -17,6 +17,6 @@ target_link_libraries(${PROJECT_NAME}
         Boost::json
         Boost::log
         Boost::url
-        UnitServerLibraryTargets::UnitServerLibrary_shared
+        Unit::Server_shared
         OpenSSL::SSL
 )

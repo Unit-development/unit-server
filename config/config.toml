@@ -1,9 +1,0 @@
-[certs]
-key_file = "<path_to_key>/server.key"
-cert_file = "<path_to_pem>/server.pem"
-
-[net]
-port = 8080
-
-[server]
-threads = 4

@@ -1,4 +1,4 @@
-doc_root = "<path_to_static_files_dir>"
+doc_root = "<path_to_doc_root>"
 [certs]
 key_file = "<path_to_key>/server.key"
 cert_file = "<path_to_pem>/server.pem"
