@@ -1,0 +1,11 @@
+doc_root = "/Users/kirillzhukov/CLionProjects/moexServer/websiteTest"
+# doc_root = "/Users/kirillzhukov/Desktop/webtest"
+[certs]
+key_file = "/Users/kirillzhukov/Downloads/server.key"
+cert_file = "/Users/kirillzhukov/Downloads/server.pem"
+
+[net]
+port = 8080
+
+[server]
+threads = 4
