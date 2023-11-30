@@ -123,6 +123,23 @@ namespace unit::server {
             callbacks, callbacks::on_data_chunk_recv_callback);
         nghttp2_session_server_new(&(this->session), callbacks, this);
         nghttp2_session_callbacks_del(callbacks);
+#if 0
+        utils::init_logging();
+        src::severity_logger_mt<logging::trivial::severity_level> logger;
+        src::logger nullLogger;
+
+        // Add custom attributes
+        logging::core::get()->add_global_attribute("LoggerName", boost::log::attributes::constant<std::string>(""));
+
+        // Log with normal logger
+        logger.add_attribute("LoggerName", boost::log::attributes::constant<std::string>("NormalLogger"));
+        BOOST_LOG_SEV(logger, logging::trivial::info) << "This log goes to normal_logs.log";
+
+        // Log with null logger
+        nullLogger.add_attribute("LoggerName", boost::log::attributes::constant<std::string>("NullLogger"));
+        BOOST_LOG(nullLogger) << "This log goes to /dev/null or NUL";
+#endif
+
     }
 
     HttpSession::~HttpSession() {
@@ -345,7 +362,6 @@ ssize_t unit::server::callbacks::raw_data_provider_callback(nghttp2_session* ses
 
         return r;
     }
-    return 0;
 }
 
 void unit::server::utils::send_response(nghttp2_session* session, const int32_t stream_id, data::HttpResponse* data,
@@ -358,21 +374,18 @@ void unit::server::utils::send_response(nghttp2_session* session, const int32_t 
     int rv = nghttp2_submit_response(session, stream_id, headers.data(), headers.size(), &provider);
 
     if (rv == 0) {
+        std::vector<uint8_t> dt;
         while (true) {
             const uint8_t *dst;
             const size_t length = nghttp2_session_mem_send(session, &dst);
             if (length == 0) {
-                // workaround :)
-                BOOST_LOG_TRIVIAL(info) << length;
+                BOOST_LOG_TRIVIAL(info) << "Data written to socket";
                 break;
             }
-            boost::system::error_code ec;
-            boost::asio::write(*ssl_session->ssl_socket, boost::asio::buffer(dst, length), ec);
-            if (ec) {
-                BOOST_LOG_TRIVIAL(error) << "`send_callback: `" << ec.what();
-                ssl_session->selfErase();
-            }
+            dt.insert(dt.end(), dst, dst + length);
         }
+        boost::system::error_code ec;
+        boost::asio::async_write(*ssl_session->ssl_socket, boost::asio::buffer(dt.data(), dt.size()), callbacks::write_handler);
     }
     else {
         BOOST_LOG_TRIVIAL(error) << "send_response `nghttp2_submit_response`: " << nghttp2_strerror(rv);
@@ -421,14 +434,14 @@ void unit::server::callbacks::write_handler(const boost::system::error_code&erro
 
 int unit::server::callbacks::on_stream_close_callback(nghttp2_session* session, const int32_t stream_id,
                                                       uint32_t error_code, void* user_data) {
-    auto* httpSession = static_cast<HttpSession *>(user_data);
+    auto* ssl_session = static_cast<HttpSession *>(user_data);
     BOOST_LOG_TRIVIAL(info) << "Stream closed: " << stream_id << ", error code: " << error_code;
-    if (!httpSession) {
+    if (!ssl_session) {
         return 0;
     }
-    httpSession->streams.erase(stream_id);
+    ssl_session->streams.erase(stream_id);
     if (stream_id == 1) {
-        httpSession->selfErase();
+        ssl_session->selfErase();
     }
     return 0;
 }

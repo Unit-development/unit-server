@@ -14,6 +14,15 @@
 #include "boost/log/trivial.hpp"
 #include "nghttp2/nghttp2.h"
 
+#if 0
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/sources/logger.hpp>
+#endif
+
 #ifdef __linux__
 #include <sstream>
 #include <string>
@@ -143,6 +152,30 @@ namespace unit::server {
 
         static int submit_fd(nghttp2_session* session, int32_t stream_id, nghttp2_nv* headers);
 
+#if 0
+        inline void init_logging() {
+            // Logger that writes to a normal file
+            logging::add_file_log(
+                keywords::file_name = "normal_logs.log",
+                keywords::filter = expr::attr<std::string>("LoggerName") != "NullLogger"
+            );
+
+            // Logger that writes to /dev/null or NUL
+#ifdef _WIN32
+            // Windows
+            logging::add_file_log(
+                keywords::file_name = "NUL",
+                keywords::filter = expr::attr<std::string>("LoggerName") == "NullLogger"
+            );
+#else
+            // Linux and Unix-like systems
+            logging::add_file_log(
+                keywords::file_name = "/dev/null",
+                keywords::filter = expr::attr<std::string>("LoggerName") == "NullLogger"
+            );
+#endif
+        }
+#endif
     }
 } // unit::server
 
